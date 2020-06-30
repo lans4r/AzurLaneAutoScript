@@ -26,7 +26,7 @@ except Exception:
     sidebar_title='功能',
     terminal_font_family='Consolas',
     language='chinese',
-    default_size=(850, 850),
+    default_size=(800, 850),
     navigation='SIDEBAR',
     tabbed_groups=True,
     show_success_modal=False,
@@ -185,6 +185,7 @@ def main(ini_name=''):
     reward_condition = reward_parser.add_argument_group('触发条件', '需要运行一次来保存选项, 运行后会进入挂机收菜模式')
     reward_condition.add_argument('--启用收获', default=default('--启用收获'), choices=['是', '否'])
     reward_condition.add_argument('--收菜间隔', default=default('--收菜间隔'), choices=['20', '30', '60'], help='每隔多少分钟触发收菜')
+    reward_condition.add_argument('--启用每日收获', default=default('--启用每日收获'), choices=['是', '否'], help='将每日任务困难演习作为收获的一部分来运行')
 
     reward_oil = reward_parser.add_argument_group('石油物资', '')
     reward_oil.add_argument('--启用石油收获', default=default('--启用石油收获'), choices=['是', '否'])
@@ -269,7 +270,7 @@ def main(ini_name=''):
     daily_task.add_argument('--斩首行动', default=default('--斩首行动'), choices=['第一个', '第二个', '第三个'])
     daily_task.add_argument('--商船护航', default=default('--商船护航'), choices=['第一个', '第二个', '第三个'])
     daily_task.add_argument('--海域突进', default=default('--海域突进'), choices=['第一个', '第二个', '第三个'])
-    daily_task.add_argument('--每日舰队', default=default('--每日舰队'), choices=['1', '2', '3', '4', '5', '6'])
+    daily_task.add_argument('--每日舰队', default=default('--每日舰队'), help='如果使用同一队, 填舰队编号, 例如 5\n如果使用不同队, 用逗号分割, 顺序为商船护送, 海域突进, 斩首行动, 战术研修\n例如 5, 5, 5, 6')
     daily_task.add_argument('--每日舰队快速换装', default=default('--每日舰队快速换装'), help='打之前换装备, 打完后卸装备, 不需要就填0\n逗号分割, 例如 3, 1, 0, 1, 1, 0')
 
     # 困难设置

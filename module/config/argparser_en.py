@@ -85,15 +85,15 @@ def main(ini_name=''):
 
     # 选择关卡
     stage = setting_parser.add_argument_group('Level settings', 'Need to Press start to save your settings.')
-    stage.add_argument('--enable_stop_condition', default=default('--enable_stop_condition'), choices=['yes', 'no'])
+    stage.add_argument('--enable_stop_condition', default=default('--enable_stop_condition'), choices=['yes', 'no'], help='If enabled will start reward loop when triggered any filter below')
     stage.add_argument('--enable_exception', default=default('--enable_exception'), choices=['yes', 'no'], help='Enable or disable some exceptions, ALAS will withdraw from the map when it occurs instead of stopping')
     stage.add_argument('--enable_fast_forward', default=default('--enable_fast_forward'), choices=['yes', 'no'], help='Enable or disable clearing mode')
 
-    stop = stage.add_argument_group('Stop condition', 'After triggering, it will not stop immediately. It will complete the current attack first, and fill in 0 if it is not needed.')
-    stop.add_argument('--if_count_greater_than', default=default('--if_count_greater_than'), help='The previous setting will be used, and the number\n of deductions will be deducted after completion of the attack until it is cleared.')
-    stop.add_argument('--if_time_reach', default=default('--if_time_reach'), help='Use the time within the next 24 hours, the previous setting will be used, and it will be cleared\n after the trigger. It is recommended to advance about\n 10 minutes to complete the current attack. Format 14:59')
-    stop.add_argument('--if_oil_lower_than', default=default('--if_oil_lower_than'))
-    stop.add_argument('--if_trigger_emotion_control', default=default('--if_trigger_emotion_control'), choices=['yes', 'no'], help='If yes, wait for reply, complete this time, stop \nIf no, wait for reply, complete this time, continue')
+    stop = stage.add_argument_group('Stop condition', 'After triggering, it will not stop immediately. It will complete the current attack first, Set 0 to disable')
+    stop.add_argument('--if_count_greater_than', default=default('--if_count_greater_than'), help='How many map completions\n until ALAS enter in Reward loop.')
+    stop.add_argument('--if_time_reach', default=default('--if_time_reach'), help='How many time in minutes run ALAS until stop\n. It is recommended about\n 10 minutes to complete the current attack. Format 14:59')
+    stop.add_argument('--if_oil_lower_than', default=default('--if_oil_lower_than'), help='Will enter in reward loop when\ntriggered Oil limit')
+    stop.add_argument('--if_trigger_emotion_control', default=default('--if_trigger_emotion_control'), choices=['yes', 'no'], help='Will enter in reward loop when\ntriggered Mood limit')
     # stop.add_argument('--if_dock_full', default=default('--if_dock_full'), choices=['yes', 'no'])
 
     # 出击舰队
@@ -186,6 +186,7 @@ def main(ini_name=''):
     reward_condition = reward_parser.add_argument_group('Triggering conditions', 'Need to Press start to save your settings, after running it will enter the on-hook vegetable collection mode')
     reward_condition.add_argument('--enable_reward', default=default('--enable_reward'), choices=['yes', 'no'])
     reward_condition.add_argument('--reward_interval', default=default('--reward_interval'), choices=['20', '30', '60'], help='How many minutes to trigger collection')
+    reward_condition.add_argument('--enable_daily_reward', default=default('--enable_daily_reward'), choices=['yes', 'no'], help='Run daily as a part of reward')
 
     reward_oil = reward_parser.add_argument_group('Oil supplies', '')
     reward_oil.add_argument('--enable_oil_reward', default=default('--enable_oil_reward'), choices=['yes', 'no'])
@@ -270,13 +271,13 @@ def main(ini_name=''):
     daily_task.add_argument('--fierce_assault', default=default('--fierce_assault'), choices=['index_1', 'index_2', 'index_3'])
     daily_task.add_argument('--escort_mission', default=default('--escort_mission'), choices=['index_1', 'index_2', 'index_3'])
     daily_task.add_argument('--advance_mission', default=default('--advance_mission'), choices=['index_1', 'index_2', 'index_3'])
-    daily_task.add_argument('--daily_fleet', default=default('--daily_fleet'), choices=['1', '2', '3', '4', '5', '6'])
+    daily_task.add_argument('--daily_fleet', default=default('--daily_fleet'), help='If use one fleet, fill in the index of the fleet, such as 5\nIf use different fleets in different daily, separate index with commas, order: Escort Mission, Advance Mission, Fierce Assault, Tactical Training, such as 5, 5, 5, 6')
     daily_task.add_argument('--daily_equipment', default=default('--daily_equipment'), help='Change equipment before playing, unload equipment after playing, do not need to fill in 0 \ncomma, such as 3, 1, 0, 1, 1, 0')
 
     # 困难设置
-    hard = daily_parser.add_argument_group('Difficult setting', 'Need to turn on weekly mode, only support 10-1, 10-2 and 10-4 temporarily')
+    hard = daily_parser.add_argument_group('Difficult setting', 'Need to turn on weekly mode')
     hard.add_argument('--hard_campaign', default=default('--hard_campaign'), help='For example 10-4')
-    hard.add_argument('--hard_fleet', default=default('--hard_fleet'), choices=['1', '2'])
+    hard.add_argument('--hard_fleet', default=default('--hard_fleet'), choices=['1', '2'], help='For 10-2 hard, Set Fleet 2')
     hard.add_argument('--hard_equipment', default=default('--hard_equipment'), help='Change equipment before playing, unload equipment after playing, do not need to fill in 0 \ncomma, such as 3, 1, 0, 1, 1, 0')
 
     # 演习设置

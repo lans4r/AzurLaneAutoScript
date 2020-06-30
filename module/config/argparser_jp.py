@@ -185,6 +185,7 @@ def main(ini_name=''):
     reward_condition = reward_parser.add_argument_group('Triggering conditions', 'Need to Press start to save your settings, after running it will enter the on-hook vegetable collection mode')
     reward_condition.add_argument('--enable_reward', default=default('--enable_reward'), choices=['yes', 'no'])
     reward_condition.add_argument('--reward_interval', default=default('--reward_interval'), choices=['20', '30', '60'], help='How many minutes to trigger collection')
+    reward_condition.add_argument('--enable_daily_reward', default=default('--enable_daily_reward'), choices=['yes', 'no'], help='Run daily as a part of reward')
 
     reward_oil = reward_parser.add_argument_group('Oil supplies', '')
     reward_oil.add_argument('--enable_oil_reward', default=default('--enable_oil_reward'), choices=['yes', 'no'])
@@ -235,7 +236,7 @@ def main(ini_name=''):
     emulator_parser = subs.add_parser('emulator')
     emulator = emulator_parser.add_argument_group('Emulator', 'Need to Press start to save your settings, it will check whether the game is started \nIf the game has not started, it will be started')
     emulator.add_argument('--serial', default=default('--serial'), help='Bluestacks 127.0.0.1:5555 \nNox 127.0.0.1:62001')
-    emulator.add_argument('--package_name', default='com.YoStarEN.AzurLane', help='')
+    emulator.add_argument('--package_name', default='com.YoStarJP.AzurLane', help='')
 
     debug = emulator_parser.add_argument_group('Debug settings', '')
     debug.add_argument('--enable_error_log_and_screenshot_save', default=default('--enable_error_log_and_screenshot_save'), choices=['yes', 'no'])
@@ -269,7 +270,7 @@ def main(ini_name=''):
     daily_task.add_argument('--fierce_assault', default=default('--fierce_assault'), choices=['index_1', 'index_2', 'index_3'])
     daily_task.add_argument('--escort_mission', default=default('--escort_mission'), choices=['index_1', 'index_2', 'index_3'])
     daily_task.add_argument('--advance_mission', default=default('--advance_mission'), choices=['index_1', 'index_2', 'index_3'])
-    daily_task.add_argument('--daily_fleet', default=default('--daily_fleet'), choices=['1', '2', '3', '4', '5', '6'])
+    daily_task.add_argument('--daily_fleet', default=default('--daily_fleet'), help='If use one fleet, fill in the index of the fleet, such as 5\nIf use different fleets in different daily, separate index with commas, order: Escort Mission, Advance Mission, Fierce Assault, Tactical Training, such as 5, 5, 5, 6')
     daily_task.add_argument('--daily_equipment', default=default('--daily_equipment'), help='Change equipment before playing, unload equipment after playing, do not need to fill in 0 \ncomma, such as 3, 1, 0, 1, 1, 0')
 
     # 困难设置

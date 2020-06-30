@@ -15,6 +15,7 @@ dev_tools/debug_tools
 /python-3.7.6.amd64
 /scripts
 /campaign/test/
+/toolkit
 
 # Created by .ignore support plugin (hsz.mobi)
 
@@ -241,3 +242,4 @@ $RECYCLE.BIN/
 adb_port.txt
 adb_port.ini
 *.exe
+*.zip

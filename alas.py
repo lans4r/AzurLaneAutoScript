@@ -6,7 +6,7 @@ from datetime import datetime
 from module.config.config import AzurLaneConfig
 from module.device.device import Device
 from module.logger import logger, pyw_name, log_file
-from module.update import Update
+from module.handler.sensitive_info import handle_sensitive_image
 
 
 class AzurLaneAutoScript:
@@ -31,7 +31,8 @@ class AzurLaneAutoScript:
                 os.mkdir(folder)
                 for data in logger.screenshot_deque:
                     image_time = datetime.strftime(data['time'], '%Y-%m-%d_%H-%M-%S-%f')
-                    data['image'].save(f'{folder}/{image_time}.png')
+                    image = handle_sensitive_image(data['image'])
+                    image.save(f'{folder}/{image_time}.png')
                 with open(log_file, 'r') as f:
                     start = 0
                     for index, line in enumerate(f.readlines()):
@@ -72,7 +73,10 @@ class AzurLaneAutoScript:
 
     def emulator(self):
         for key, value in self.config.config['Emulator'].items():
-            print(f'{key} = {value}')
+            if key == 'github_token':
+                print(f'{key} = {"<sensitive_infomation>"}')
+            else:
+                print(f'{key} = {value}')
 
         logger.hr('Emulator saved')
         self.update_check()
@@ -96,38 +100,9 @@ class AzurLaneAutoScript:
         """
         Method to run daily missions.
         """
-        if self.config.ENABLE_DAILY_MISSION:
-            from module.daily.daily import Daily
-            az = Daily(self.config, device=self.device)
-            if not az.record_executed_since():
-                az.run()
-                az.record_save()
-
-        if self.config.ENABLE_HARD_CAMPAIGN:
-            from module.hard.hard import CampaignHard
-            az = CampaignHard(self.config, device=self.device)
-            if not az.record_executed_since():
-                az.run()
-                az.record_save()
-
-        if self.config.ENABLE_EXERCISE:
-            from module.exercise.exercise import Exercise
-            az = Exercise(self.config, device=self.device)
-            if not az.record_executed_since():
-                az.run()
-                az.record_save()
-
-        if self.config.ENABLE_EVENT_NAME_AB:
-            from module.event.campaign_ab import CampaignAB
-            az = CampaignAB(self.config, device=self.device)
-            az.run_event_daily()
-
-        if self.config.ENABLE_RAID_DAILY:
-            from module.raid.daily import RaidDaily
-            az = RaidDaily(self.config, device=self.device)
-            if not az.record_executed_since():
-                az.run(self.config.RAID_DAILY_NAME)
-                az.record_save()
+        from module.reward.reward import Reward
+        az = Reward(self.config, device=self.device)
+        az.daily_wrapper_run()
 
         self.reward_when_finished()
 
@@ -143,7 +118,7 @@ class AzurLaneAutoScript:
     def raid(self):
         from module.raid.run import RaidRun
         az = RaidRun(self.config, device=self.device)
-        az.run(self.config.RAID_NAME)
+        az.run()
         self.reward_when_finished()
 
     def event_daily_ab(self):

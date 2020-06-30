@@ -1,12 +1,12 @@
 from module.campaign.run import CampaignRun
 from module.exception import ScriptEnd
 from module.logger import logger
-from module.raid.raid import Raid
+from module.raid.raid import Raid, OilExhausted
 from module.ui.page import page_raid
 
 
 class RaidRun(Raid, CampaignRun):
-    def run(self, name, mode='hard', total=0):
+    def run(self, name='', mode='', total=0):
         """
         Args:
             name (str): Raid name, such as 'raid_20200624'
@@ -14,9 +14,15 @@ class RaidRun(Raid, CampaignRun):
             total (int): Total run count
         """
         logger.hr('Raid', level=1)
-        self.config.STOP_IF_OIL_LOWER_THAN = 0  # No oil shows on page_raid
+        name = name if name else self.config.RAID_NAME
+        mode = mode if mode else self.config.RAID_MODE
+        if not name or not mode:
+            logger.warning(f'RaidRun arguments unfilled. name={name}, mode={mode}')
+
         self.campaign = self  # A trick to call CampaignRun
         self.campaign_name_set(f'{name}_{mode}')
+
+        self.device.screenshot()
 
         self.run_count = 0
         while 1:
@@ -35,17 +41,22 @@ class RaidRun(Raid, CampaignRun):
             else:
                 logger.info(f'Count: [{self.run_count}]')
 
-            # UI ensure
-            self.device.screenshot()
-            self.ui_ensure(page_raid)
-
             # End
-            if self.triggered_stop_condition():
+            oil_backup, self.config.STOP_IF_OIL_LOWER_THAN = self.config.STOP_IF_OIL_LOWER_THAN, 0
+            triggered = self.triggered_stop_condition()
+            self.config.STOP_IF_OIL_LOWER_THAN = oil_backup
+            if triggered:
                 break
+
+            # UI ensure
+            self.ui_ensure(page_raid)
 
             # Run
             try:
                 self.raid_execute_once(mode=mode if mode else self.config.RAID_MODE)
+            except OilExhausted:
+                self.ui_goto_main()
+                break
             except ScriptEnd as e:
                 logger.hr('Script end')
                 logger.info(str(e))

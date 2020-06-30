@@ -77,6 +77,9 @@ class Combat(HPBalancer, EnemySearchingHandler, Retirement, SubmarineCall, Comba
         """
         return self.appear(PAUSE) and np.max(self.device.image.crop(PAUSE_DOUBLE_CHECK.area)) < 153
 
+    def ensure_combat_oil_loaded(self):
+        self.wait_until_stable(COMBAT_OIL_LOADING)
+
     def handle_combat_automation_confirm(self):
         if self.appear(AUTOMATION_CONFIRM_CHECK, interval=1):
             self.appear_then_click(AUTOMATION_CONFIRM, offset=True)
@@ -309,7 +312,7 @@ class Combat(HPBalancer, EnemySearchingHandler, Retirement, SubmarineCall, Comba
             expected_end (str): with_searching, no_searching, in_stage.
         """
         logger.info('Combat status')
-        logger.attr('expected_end', expected_end)
+        logger.attr('expected_end', expected_end.__name__ if callable(expected_end) else expected_end)
         exp_info = False  # This is for the white screen bug in game
         while 1:
             self.device.screenshot()
